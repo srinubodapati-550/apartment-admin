@@ -1,0 +1,390 @@
+.funds-page {
+
+  padding: 32px;
+
+  min-height: calc(100vh - 80px);
+
+  background: #f5f7fb;
+}
+
+
+/* =========================
+   PAGE HEADER
+========================= */
+
+.page-title-section {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  margin-bottom: 28px;
+}
+
+
+.page-title-section h2 {
+
+  margin: 0;
+
+  color: #172033;
+
+  font-size: 24px;
+}
+
+
+.page-title-section p {
+
+  margin: 7px 0 0;
+
+  color: #6b7280;
+
+  font-size: 14px;
+}
+
+
+/* =========================
+   FUND CARDS
+========================= */
+
+.funds-grid {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 22px;
+
+  margin-bottom: 28px;
+}
+
+
+.fund-main-card {
+
+  background: white;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 14px;
+
+  padding: 26px;
+
+  transition: 0.2s;
+}
+
+
+.fund-main-card:hover {
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 8px 20px
+    rgba(0, 0, 0, 0.06);
+}
+
+
+.fund-card-header {
+
+  display: flex;
+
+  align-items: center;
+}
+
+
+.large-fund-icon {
+
+  width: 56px;
+
+  height: 56px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 12px;
+
+  background: #eff6ff;
+
+  font-size: 26px;
+
+  margin-right: 15px;
+}
+
+
+.fund-card-header h3 {
+
+  margin: 0;
+
+  color: #172033;
+
+  font-size: 17px;
+}
+
+
+.fund-card-header span {
+
+  display: block;
+
+  margin-top: 5px;
+
+  color: #6b7280;
+
+  font-size: 12px;
+}
+
+
+/* =========================
+   FUND BALANCE
+========================= */
+
+.fund-balance {
+
+  margin-top: 30px;
+}
+
+
+.fund-balance p {
+
+  margin: 0;
+
+  color: #6b7280;
+
+  font-size: 13px;
+}
+
+
+.fund-balance h1 {
+
+  margin: 8px 0 0;
+
+  color: #172033;
+
+  font-size: 30px;
+}
+
+
+.fund-type {
+
+  display: inline-block;
+
+  margin-top: 20px;
+
+  padding: 6px 10px;
+
+  background: #eff6ff;
+
+  border-radius: 6px;
+
+  color: #2563eb;
+
+  font-size: 10px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.7px;
+}
+
+
+.corpus-type {
+
+  background: #f3f4f6;
+
+  color: #4b5563;
+}
+
+
+/* =========================
+   TRANSACTIONS
+========================= */
+
+.transactions-section {
+
+  background: white;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 14px;
+
+  padding: 26px;
+}
+
+
+.transactions-header {
+
+  margin-bottom: 24px;
+}
+
+
+.transactions-header h3 {
+
+  margin: 0;
+
+  color: #172033;
+
+  font-size: 18px;
+}
+
+
+.transactions-header p {
+
+  margin: 6px 0 0;
+
+  color: #6b7280;
+
+  font-size: 13px;
+}
+
+
+/* =========================
+   EMPTY STATE
+========================= */
+
+.empty-state {
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  min-height: 240px;
+
+  text-align: center;
+
+  color: #6b7280;
+}
+
+
+.empty-icon {
+
+  font-size: 42px;
+
+  margin-bottom: 12px;
+}
+
+
+.empty-state h3 {
+
+  margin: 5px 0;
+
+  color: #172033;
+
+  font-size: 17px;
+}
+
+
+.empty-state p {
+
+  margin: 5px 0;
+
+  font-size: 13px;
+}
+
+
+/* =========================
+   TABLE
+========================= */
+
+.transactions-table-wrapper {
+
+  overflow-x: auto;
+}
+
+
+.transactions-table {
+
+  width: 100%;
+
+  border-collapse: collapse;
+}
+
+
+.transactions-table th {
+
+  text-align: left;
+
+  padding: 14px;
+
+  background: #f8fafc;
+
+  color: #6b7280;
+
+  font-size: 11px;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.5px;
+}
+
+
+.transactions-table td {
+
+  padding: 15px 14px;
+
+  border-bottom:
+    1px solid #eef0f4;
+
+  color: #374151;
+
+  font-size: 13px;
+}
+
+
+.amount-cell {
+
+  font-weight: 600;
+
+  color: #172033 !important;
+}
+
+
+/* =========================
+   TRANSACTION BADGE
+========================= */
+
+.transaction-badge {
+
+  display: inline-block;
+
+  padding: 5px 8px;
+
+  border-radius: 5px;
+
+  background: #f3f4f6;
+
+  font-size: 10px;
+
+  font-weight: 700;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 900px) {
+
+  .funds-grid {
+
+    grid-template-columns: 1fr;
+
+  }
+
+}
+
+
+@media (max-width: 600px) {
+
+  .funds-page {
+
+    padding: 20px;
+
+  }
+
+}

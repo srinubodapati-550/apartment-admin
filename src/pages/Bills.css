@@ -1,0 +1,372 @@
+.bills-page {
+  padding: 32px;
+  min-height: calc(100vh - 80px);
+  background: #f5f7fb;
+}
+
+.bill-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.summary-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.summary-card span {
+  display: block;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.summary-card strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 28px;
+  color: #172033;
+}
+
+.bills-section {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 26px;
+}
+
+.bills-section h3 {
+  margin: 0 0 22px;
+  color: #172033;
+}
+
+.bills-table-wrapper {
+  overflow-x: auto;
+}
+
+.bills-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.bills-table th {
+  text-align: left;
+  padding: 14px;
+  background: #f8fafc;
+  color: #6b7280;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.bills-table td {
+  padding: 15px 14px;
+  border-bottom: 1px solid #eef0f4;
+  font-size: 13px;
+  color: #374151;
+}
+
+.bill-status {
+  padding: 5px 9px;
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  background: #f3f4f6;
+}
+
+.bill-status.PENDING {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.bill-status.PAID {
+  background: #dcfce7;
+  color: #166534;
+}
+
+
+/* MODAL */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.bill-modal {
+  width: 480px;
+  max-width: 90%;
+  background: white;
+  border-radius: 14px;
+  padding: 26px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: #172033;
+}
+
+.modal-header p {
+  margin: 6px 0 0;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.close-button {
+  border: none;
+  background: transparent;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 11px;
+  border: 1px solid #d1d5db;
+  border-radius: 7px;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.primary-button,
+.secondary-button {
+  padding: 10px 16px;
+  border-radius: 7px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.primary-button {
+  background: #2563eb;
+  color: white;
+}
+
+.secondary-button {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+@media (max-width: 700px) {
+
+  .bill-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .bills-page {
+    padding: 20px;
+  }
+
+}
+
+/* =========================
+   EDIT BILL
+========================= */
+
+.edit-bill-button {
+
+  border: none;
+
+  background: #eff6ff;
+
+  color: #2563eb;
+
+  padding: 7px 10px;
+
+  border-radius: 6px;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+}
+
+
+.edit-bill-button:hover {
+
+  background: #dbeafe;
+
+}
+
+
+.locked-text {
+
+  color: #9ca3af;
+
+  font-size: 12px;
+
+}
+
+/* =========================
+   PAYMENT APPROVALS
+========================= */
+
+.payments-section {
+
+  background: white;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 14px;
+
+  padding: 26px;
+
+  margin-bottom: 28px;
+
+}
+
+
+.payments-section-header {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  margin-bottom: 22px;
+
+}
+
+
+.payments-section-header h3 {
+
+  margin: 0;
+
+  color: #172033;
+
+}
+
+
+.payments-section-header p {
+
+  margin: 6px 0 0;
+
+  color: #6b7280;
+
+  font-size: 13px;
+
+}
+
+
+.payment-count {
+
+  background: #fef3c7;
+
+  color: #92400e;
+
+  padding: 7px 10px;
+
+  border-radius: 6px;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+}
+
+
+.payment-actions {
+
+  display: flex;
+
+  gap: 8px;
+
+}
+
+
+.approve-button {
+
+  border: none;
+
+  background: #dcfce7;
+
+  color: #166534;
+
+  padding: 7px 10px;
+
+  border-radius: 6px;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+}
+
+
+.reject-button {
+
+  border: none;
+
+  background: #fee2e2;
+
+  color: #991b1b;
+
+  padding: 7px 10px;
+
+  border-radius: 6px;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+}
+
+
+.form-group textarea {
+
+  width: 100%;
+
+  min-height: 100px;
+
+  padding: 11px;
+
+  border: 1px solid #d1d5db;
+
+  border-radius: 7px;
+
+  box-sizing: border-box;
+
+  font-family: inherit;
+
+  font-size: 14px;
+
+}

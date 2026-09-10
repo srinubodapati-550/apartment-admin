@@ -1,0 +1,230 @@
+.sidebar {
+  width: 260px;
+  height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+
+  background: #172033;
+  color: white;
+
+  flex-shrink: 0;
+}
+
+
+/* Logo */
+
+.sidebar-logo {
+  height: 80px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 24px;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+
+.sidebar-logo-icon {
+  font-size: 30px;
+  margin-right: 12px;
+}
+
+
+.sidebar-logo h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+
+.sidebar-logo span {
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+
+/* Navigation */
+
+.sidebar-nav {
+  flex: 1;
+
+  padding: 20px 12px;
+
+  overflow-y: auto;
+}
+
+
+.menu-title {
+  margin: 15px 12px 8px;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  color: #7b879b;
+
+  letter-spacing: 1px;
+}
+
+
+.finance-title,
+.management-title {
+  margin-top: 28px;
+}
+
+
+/* Navigation Item */
+
+.nav-item {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+
+  border: none;
+
+  background: transparent;
+
+  color: #cbd5e1;
+
+  padding: 12px 14px;
+
+  border-radius: 8px;
+
+  margin-bottom: 4px;
+
+  font-size: 14px;
+
+  cursor: pointer;
+
+  text-align: left;
+
+  transition: 0.2s;
+}
+
+
+.nav-item:hover {
+  background: #253047;
+  color: white;
+}
+
+
+.nav-item.active {
+  background: #2563eb;
+  color: white;
+
+  font-weight: 600;
+}
+
+
+.nav-icon {
+  width: 28px;
+  font-size: 16px;
+}
+
+
+/* Bottom Section */
+
+.sidebar-bottom {
+
+  padding: 16px 14px;
+
+  border-top:
+    1px solid rgba(255, 255, 255, 0.08);
+}
+
+
+.sidebar-user {
+
+  display: flex;
+  align-items: center;
+
+  margin-bottom: 15px;
+}
+
+
+.user-avatar {
+
+  width: 38px;
+  height: 38px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #2563eb;
+
+  font-weight: 700;
+
+  margin-right: 10px;
+}
+
+
+.user-info {
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+}
+
+
+.user-info strong {
+
+  font-size: 13px;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+.user-info span {
+
+  margin-top: 3px;
+
+  color: #94a3b8;
+
+  font-size: 11px;
+}
+
+
+/* Logout */
+
+.logout-button {
+
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 10px 12px;
+
+  border: none;
+
+  border-radius: 7px;
+
+  background: transparent;
+
+  color: #cbd5e1;
+
+  cursor: pointer;
+
+  font-size: 13px;
+
+  text-align: left;
+}
+
+
+.logout-button:hover {
+
+  background: #253047;
+
+  color: white;
+}
