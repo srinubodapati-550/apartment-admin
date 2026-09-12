@@ -16,6 +16,21 @@ function Notices() {
   const [selectedStatus, setSelectedStatus] =
     useState('ALL')
 
+  const [showCreateModal, setShowCreateModal] =
+    useState(false)
+
+  const [saving, setSaving] =
+    useState(false)
+
+  const [formData, setFormData] =
+    useState({
+      title: '',
+      description: '',
+      priority: 'NORMAL',
+      status: 'DRAFT',
+      expiryDate: ''
+    })
+    
 
   useEffect(() => {
 
@@ -23,6 +38,182 @@ function Notices() {
 
   }, [])
 
+
+  function handleFormChange(event) {
+
+    const {
+      name,
+      value
+    } = event.target
+
+    setFormData({
+      ...formData,
+      [name]: value
+    })
+
+  }
+
+    async function createNotice(event) {
+
+    event.preventDefault()
+
+    if (
+      !formData.title.trim() ||
+      !formData.description.trim()
+    ) {
+
+      alert(
+        'Please fill all required fields.'
+      )
+
+      return
+
+    }
+
+
+    setSaving(true)
+
+
+    try {
+
+      /* Get logged-in admin */
+
+      const {
+        data: {
+          user
+        },
+        error: userError
+      } = await supabase.auth.getUser()
+
+
+      if (userError || !user) {
+
+        throw new Error(
+          'Unable to identify the logged-in administrator.'
+        )
+
+      }
+
+
+      /*
+       * Your notices table requires apartment_id.
+       * For the current single-apartment setup,
+       * use the first apartment.
+       */
+
+      const {
+        data: apartment,
+        error: apartmentError
+      } = await supabase
+        .from('apartments')
+        .select('id')
+        .limit(1)
+        .single()
+
+
+      if (apartmentError || !apartment) {
+
+        throw new Error(
+          'Unable to identify the apartment.'
+        )
+
+      }
+
+      console.log('Notice data being inserted:', {
+      priority: formData.priority,
+      status: formData.status
+      })
+
+      const noticeData = {
+
+        apartment_id:
+          apartment.id,
+
+        title:
+          formData.title.trim(),
+
+        description:
+          formData.description.trim(),
+
+        priority:
+          formData.priority || 'NORMAL',
+
+        status:
+          formData.status,
+
+        published_by:
+          formData.status === 'ACTIVE'
+            ? user.id
+            : null,
+
+        published_at:
+          formData.status === 'ACTIVE'
+            ? new Date().toISOString()
+            : null,
+
+        expiry_date:
+          formData.expiryDate
+            ? formData.expiryDate
+            : null
+
+      }
+
+
+      const {
+        error
+      } = await supabase
+        .from('notices')
+        .insert(noticeData)
+
+
+      if (error) {
+
+        throw error
+
+      }
+
+
+      alert(
+        formData.status === 'ACTIVE'
+          ? 'Notice published successfully.'
+          : 'Notice saved as draft successfully.'
+      )
+
+
+      setShowCreateModal(false)
+
+
+      setFormData({
+
+        title: '',
+        description: '',
+        priority: 'NORMAL',
+        status: 'DRAFT',
+        expiryDate: ''
+
+      })
+
+
+      await loadNotices()
+
+    } catch (error) {
+
+      console.error(
+        'Create notice error:',
+        error
+      )
+
+      alert(
+        `Unable to create notice: ${error.message}`
+      )
+
+    } finally {
+
+      setSaving(false)
+
+    }
+
+  }
 
   async function loadNotices() {
 
@@ -201,16 +392,14 @@ function Notices() {
         </div>
 
 
-        <button
-          className="primary-button"
-          onClick={() =>
-            alert(
-              'Create Notice will be added in Step 24.6B.'
-            )
-          }
-        >
-          + Create Notice
-        </button>
+<button
+  className="primary-button"
+  onClick={() =>
+    setShowCreateModal(true)
+  }
+>
+  + Create Notice
+</button>
 
       </div>
 
@@ -595,6 +784,220 @@ function Notices() {
 
       </div>
 
+      {
+        showCreateModal && (
+
+          <div className="modal-overlay">
+
+            <div className="notice-modal">
+
+
+              {/* MODAL HEADER */}
+
+              <div className="modal-header">
+
+                <div>
+
+                  <h3>
+                    Create Notice
+                  </h3>
+
+                  <p>
+                    Create a new society announcement.
+                  </p>
+
+                </div>
+
+
+                <button
+                  type="button"
+                  className="close-button"
+                  onClick={() =>
+                    setShowCreateModal(false)
+                  }
+                >
+                  ✕
+                </button>
+
+              </div>
+
+
+              {/* FORM */}
+
+              <form
+                onSubmit={createNotice}
+              >
+
+
+                {/* TITLE */}
+
+                <div className="form-group">
+
+                  <label>
+                    Title *
+                  </label>
+
+                  <input
+                    type="text"
+                    name="title"
+                    value={formData.title}
+                    onChange={handleFormChange}
+                    placeholder="Example: Lift maintenance on Sunday"
+                    maxLength="150"
+                    required
+                  />
+
+                </div>
+
+
+                {/* DESCRIPTION */}
+
+                <div className="form-group">
+
+                  <label>
+                    Description *
+                  </label>
+
+                  <textarea
+                    name="description"
+                    value={formData.description}
+                    onChange={handleFormChange}
+                    placeholder="Enter notice details..."
+                    rows="5"
+                    required
+                  />
+
+                </div>
+
+
+                {/* PRIORITY */}
+
+                <div className="form-group">
+
+                  <label>
+                    Priority
+                  </label>
+
+                  <select
+                    name="priority"
+                    value={formData.priority}
+                    onChange={handleFormChange}
+                  >
+
+              <option value="LOW">
+               Low
+              </option>
+
+              <option value="NORMAL">
+                Normal
+                </option>
+
+              <option value="HIGH">
+                 High
+                </option>
+
+              <option value="URGENT">
+                Urgent
+              </option>
+
+                  </select>
+
+                </div>
+
+
+                {/* STATUS */}
+
+                <div className="form-group">
+
+                  <label>
+                    Status
+                  </label>
+
+                  <select
+                    name="status"
+                    value={formData.status}
+                    onChange={handleFormChange}
+                  >
+
+                    <option value="DRAFT">
+                      Draft
+                    </option>
+
+                    <option value="ACTIVE">
+                      Publish Now
+                    </option>
+
+                  </select>
+
+                </div>
+
+
+                {/* EXPIRY DATE */}
+
+                <div className="form-group">
+
+                  <label>
+                    Expiry Date
+                  </label>
+
+                  <input
+                    type="date"
+                    name="expiryDate"
+                    value={formData.expiryDate}
+                    onChange={handleFormChange}
+                  />
+
+                  <small className="form-help">
+                    Leave empty if the notice has no expiry date.
+                  </small>
+
+                </div>
+
+
+                {/* ACTIONS */}
+
+                <div className="modal-actions">
+
+                  <button
+                    type="button"
+                    className="secondary-button"
+                    onClick={() =>
+                      setShowCreateModal(false)
+                    }
+                    disabled={saving}
+                  >
+                    Cancel
+                  </button>
+
+
+                  <button
+                    type="submit"
+                    className="primary-button"
+                    disabled={saving}
+                  >
+
+                    {
+                      saving
+                        ? 'Saving...'
+                        : formData.status === 'ACTIVE'
+                          ? 'Publish Notice'
+                          : 'Save Draft'
+                    }
+
+                  </button>
+
+                </div>
+
+
+              </form>
+
+
+            </div>
+
+          </div>
+
+        )
+      }
 
     </div>
 

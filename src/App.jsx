@@ -14,6 +14,7 @@ import Bills from './pages/Bills'
 import Flats from './pages/Flats'
 import Notices from './pages/Notices'
 import Users from './pages/Users'
+import Complaints from './pages/Complaints'
 
 import './App.css'
 
@@ -63,7 +64,7 @@ function renderPage() {
       return <Notices/>
 
     case 'complaints':
-      return <div>Complaints Page</div>
+      return <Complaints />
 
     default:
       return <Dashboard user={user} />

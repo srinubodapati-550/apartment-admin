@@ -12,6 +12,9 @@ function Flats() {
 
   const [residents, setResidents] = useState([])
 
+  const [newMemberId, setNewMemberId] = useState('')
+  const [newMemberRelationship, setNewMemberRelationship] = useState('FAMILY')
+
   const [blocks, setBlocks] = useState([])
 
   const [selectedBlock, setSelectedBlock] =
@@ -39,15 +42,17 @@ const [showEditModal, setShowEditModal] =
 const [selectedFlat, setSelectedFlat] =
   useState(null)
 
-const [editFormData, setEditFormData] =
-  useState({
-    blockId: '',
-    flatNumber: '',
-    floorNumber: '',
-    flatType: '',
-    areaSqft: '',
-    status: 'VACANT'
-  })
+const [editFormData, setEditFormData] = useState({
+  blockId: '',
+  flatNumber: '',
+  floorNumber: '',
+  flatType: '',
+  areaSqft: '',
+  status: 'VACANT',
+  ownerId: '',
+  ownerPhone: '',
+  memberCount: 0
+})
 
   useEffect(() => {
 
@@ -60,11 +65,12 @@ const [editFormData, setEditFormData] =
 
     setLoading(true)
 
-     await Promise.all([
-     loadFlats(),
-     loadBlocks(),
-     loadFlatMembers()
-     ])
+await Promise.all([
+  loadFlats(),
+  loadBlocks(),
+  loadFlatMembers(),
+  loadResidents()
+])
 
     setLoading(false)
 
@@ -83,6 +89,7 @@ const [editFormData, setEditFormData] =
         area_sqft,
         status,
         block_id,
+        member_count,
         blocks (
           id,
           name
@@ -117,10 +124,10 @@ const [editFormData, setEditFormData] =
   }
 
 async function loadFlatMembers() {
-
   const { data, error } = await supabase
     .from('flat_members')
     .select(`
+      id,
       flat_id,
       user_id,
       relationship,
@@ -131,20 +138,47 @@ async function loadFlatMembers() {
     .eq('status', 'ACTIVE')
 
   if (error) {
+    console.error('Error loading flat members:', error)
+    alert(`Unable to load flat residents: ${error.message}`)
+    return
+  }
+
+  setFlatMembers(data || [])
+}
+
+async function loadResidents() {
+
+  const { data, error } = await supabase
+    .from('users')
+    .select(`
+      id,
+      full_name,
+      email,
+      phone,
+      role,
+      status
+    `)
+    .eq('role', 'RESIDENT')
+    .eq('status', 'ACTIVE')
+    .order('full_name', {
+      ascending: true
+    })
+
+  if (error) {
 
     console.error(
-      'Error loading flat members:',
+      'Error loading residents:',
       error
     )
 
     alert(
-      `Unable to load flat residents: ${error.message}`
+      `Unable to load residents: ${error.message}`
     )
 
     return
   }
 
-  setFlatMembers(data || [])
+  setResidents(data || [])
 }
 
 function getFlatOwner(flatId) {
@@ -364,34 +398,29 @@ async function addFlat(event) {
 }
 
 function openEditModal(flat) {
-
   setSelectedFlat(flat)
 
+  const currentOwner = flatMembers.find(
+    (member) =>
+      member.flat_id === flat.id &&
+      member.relationship === 'OWNER' &&
+      member.is_primary === true &&
+      member.status === 'ACTIVE'
+  )
+
   setEditFormData({
-
-    blockId:
-      flat.block_id || '',
-
-    flatNumber:
-      flat.flat_number || '',
-
-    floorNumber:
-      flat.floor_number || '',
-
-    flatType:
-      flat.flat_type || '',
-
-    areaSqft:
-      flat.area_sqft || '',
-
-    status:
-      flat.status || 'VACANT'
-
-  })
-
+  blockId: flat.block_id,
+  flatNumber: flat.flat_number,
+  floorNumber: flat.floor_number,
+  flatType: flat.flat_type,
+  areaSqft: flat.area_sqft,
+  status: flat.status,
+  ownerId: currentOwner ? currentOwner.user_id : '',
+  ownerPhone: currentOwner?.users?.phone || '',
+  memberCount: flat.member_count || 0
+})
 
   setShowEditModal(true)
-
 }
 
 function handleEditChange(event) {
@@ -412,10 +441,64 @@ function handleEditChange(event) {
 
 }
 
+async function addMember() {
+
+  if (!selectedFlat) {
+    alert('Please select a flat.')
+    return
+  }
+
+  if (!newMemberId) {
+    alert('Please select a resident.')
+    return
+  }
+
+  const alreadyMember = flatMembers.some(
+    (member) =>
+      member.flat_id === selectedFlat.id &&
+      member.user_id === newMemberId &&
+      member.status === 'ACTIVE'
+  )
+
+  if (alreadyMember) {
+    alert('This resident is already a member of this flat.')
+    return
+  }
+
+  const { error } = await supabase
+    .from('flat_members')
+    .insert({
+      flat_id: selectedFlat.id,
+      user_id: newMemberId,
+      relationship: newMemberRelationship,
+      is_primary: false,
+      status: 'ACTIVE',
+      move_in_date: new Date()
+        .toISOString()
+        .split('T')[0]
+    })
+
+  if (error) {
+    console.error('Add member error:', error)
+
+    alert(
+      `Unable to add member: ${error.message}`
+    )
+
+    return
+  }
+
+  alert('Member added successfully.')
+
+  setNewMemberId('')
+  setNewMemberRelationship('FAMILY')
+
+  await loadFlatMembers()
+}
+
 async function updateFlat(event) {
 
   event.preventDefault()
-
 
   if (
     !editFormData.blockId ||
@@ -432,9 +515,11 @@ async function updateFlat(event) {
   }
 
 
+  // 1. Update flat details
   const { error } = await supabase
     .from('flats')
     .update({
+
 
       block_id:
         editFormData.blockId,
@@ -454,7 +539,10 @@ async function updateFlat(event) {
           : null,
 
       status:
-        editFormData.status
+        editFormData.status,
+
+      member_count:
+      Number(editFormData.memberCount)
 
     })
     .eq(
@@ -479,6 +567,209 @@ async function updateFlat(event) {
   }
 
 
+  // 2. Update owner phone number
+  if (editFormData.ownerId) {
+
+    const { error: phoneError } = await supabase
+      .from('users')
+      .update({
+        phone:
+          editFormData.ownerPhone
+            ? editFormData.ownerPhone.trim()
+            : null
+      })
+      .eq(
+        'id',
+        editFormData.ownerId
+      )
+
+
+    if (phoneError) {
+
+      console.error(
+        'Update owner phone error:',
+        phoneError
+      )
+
+      alert(
+        `Flat updated, but owner phone could not be updated: ${phoneError.message}`
+      )
+
+      return
+
+    }
+
+  }
+
+
+  // 3. Find current primary owner
+  const existingOwner = flatMembers.find(
+    (member) =>
+      member.flat_id === selectedFlat.id &&
+      member.relationship === 'OWNER' &&
+      member.is_primary === true &&
+      member.status === 'ACTIVE'
+  )
+
+
+  // 4. Change owner if required
+  if (
+    editFormData.ownerId &&
+    (!existingOwner ||
+      existingOwner.user_id !== editFormData.ownerId)
+  ) {
+
+    // Deactivate previous owner
+    if (existingOwner) {
+
+      const { error: oldOwnerError } = await supabase
+        .from('flat_members')
+        .update({
+          status: 'INACTIVE',
+          is_primary: false,
+          move_out_date:
+            new Date()
+              .toISOString()
+              .split('T')[0]
+        })
+        .eq(
+          'id',
+          existingOwner.id
+        )
+
+
+      if (oldOwnerError) {
+
+        console.error(
+          'Deactivate old owner error:',
+          oldOwnerError
+        )
+
+        alert(
+          `Flat updated, but previous owner could not be changed: ${oldOwnerError.message}`
+        )
+
+        return
+
+      }
+
+    }
+
+
+    // Check whether new owner already belongs to this flat
+    const { data: existingMembership, error: membershipCheckError } =
+      await supabase
+        .from('flat_members')
+        .select('id')
+        .eq(
+          'flat_id',
+          selectedFlat.id
+        )
+        .eq(
+          'user_id',
+          editFormData.ownerId
+        )
+        .maybeSingle()
+
+
+    if (membershipCheckError) {
+
+      console.error(
+        'Check owner membership error:',
+        membershipCheckError
+      )
+
+      alert(
+        `Unable to check owner membership: ${membershipCheckError.message}`
+      )
+
+      return
+
+    }
+
+
+    if (existingMembership) {
+
+      // Reactivate existing membership
+      const { error: membershipUpdateError } =
+        await supabase
+          .from('flat_members')
+          .update({
+            relationship: 'OWNER',
+            is_primary: true,
+            status: 'ACTIVE',
+            move_out_date: null
+          })
+          .eq(
+            'id',
+            existingMembership.id
+          )
+
+
+      if (membershipUpdateError) {
+
+        console.error(
+          'Update owner membership error:',
+          membershipUpdateError
+        )
+
+        alert(
+          `Unable to update owner: ${membershipUpdateError.message}`
+        )
+
+        return
+
+      }
+
+    } else {
+
+      // Create new owner membership
+      const { error: membershipInsertError } =
+        await supabase
+          .from('flat_members')
+          .insert({
+            flat_id:
+              selectedFlat.id,
+
+            user_id:
+              editFormData.ownerId,
+
+            relationship:
+              'OWNER',
+
+            is_primary:
+              true,
+
+            status:
+              'ACTIVE',
+
+            move_in_date:
+              new Date()
+                .toISOString()
+                .split('T')[0]
+          })
+
+
+      if (membershipInsertError) {
+
+        console.error(
+          'Insert owner membership error:',
+          membershipInsertError
+        )
+
+        alert(
+          `Unable to add owner: ${membershipInsertError.message}`
+        )
+
+        return
+
+      }
+
+    }
+
+  }
+
+
   alert(
     'Flat updated successfully.'
   )
@@ -489,7 +780,7 @@ async function updateFlat(event) {
   setSelectedFlat(null)
 
 
-  await loadFlats()
+  await loadData()
 
 }
 
@@ -812,7 +1103,7 @@ async function updateFlat(event) {
 
   <span className="member-count">
 
-    {getFlatMemberCount(flat.id)}
+    {flat.member_count || 0}
 
   </span>
 
@@ -1305,7 +1596,64 @@ async function updateFlat(event) {
             />
 
           </div>
+  {/* Owner */}
+<div className="form-group">
+  <label>Owner</label>
 
+  <select
+    value={editFormData.ownerId}
+    onChange={(e) =>
+      setEditFormData({
+        ...editFormData,
+        ownerId: e.target.value
+      })
+    }
+  >
+    <option value="">Select Owner</option>
+
+    {residents.map((resident) => (
+      <option key={resident.id} value={resident.id}>
+        {resident.full_name}
+        {resident.phone ? ` - ${resident.phone}` : ''}
+        {resident.email ? ` - ${resident.email}` : ''}
+      </option>
+    ))}
+  </select>
+</div>
+
+          {/* Phone */}
+<div className="form-group">
+  <label>Phone Number</label>
+
+  <input
+    type="tel"
+    value={editFormData.ownerPhone}
+    onChange={(e) =>
+      setEditFormData({
+        ...editFormData,
+        ownerPhone: e.target.value
+      })
+    }
+    placeholder="Enter phone number"
+  />
+</div>
+          {/* Current Members*/}
+<div className="form-group">
+  <label>Number of Members</label>
+
+  <input
+    type="number"
+    min="1"
+    value={editFormData.memberCount}
+    onChange={(e) =>
+      setEditFormData({
+        ...editFormData,
+        memberCount: e.target.value
+      })
+    }
+    placeholder="Enter number of members"
+  />
+</div>
 
           {/* STATUS */}
 
