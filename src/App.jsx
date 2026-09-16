@@ -15,6 +15,7 @@ import Flats from './pages/Flats'
 import Notices from './pages/Notices'
 import Users from './pages/Users'
 import Complaints from './pages/Complaints'
+import Expenses from './pages/Expenses'
 
 import './App.css'
 
@@ -39,7 +40,7 @@ function renderPage() {
   switch (currentPage) {
 
     case 'dashboard':
-      return <Dashboard user={user} />
+      return <Dashboard  user={user}  onNavigate={setCurrentPage} />
 
 
     case 'flats':
@@ -55,7 +56,7 @@ function renderPage() {
       return <Bills />
 
     case 'expenses':
-      return <div>Expenses Page</div>
+      return <Expenses />
 
     case 'funds':
       return <Funds />

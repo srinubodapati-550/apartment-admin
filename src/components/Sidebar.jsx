@@ -72,23 +72,6 @@ function Sidebar({
 
 
 
-        {/* Residents */}
-
-        <button
-          className={`nav-item ${
-            currentPage === 'residents'
-              ? 'active'
-              : ''
-          }`}
-          onClick={() =>
-            setCurrentPage('residents')
-          }
-        >
-          <span className="nav-icon">👥</span>
-          Residents
-        </button>
-
-
         {/* Finance */}
 
         <p className="menu-title finance-title">
@@ -109,7 +92,7 @@ function Sidebar({
           }
         >
           <span className="nav-icon">💳</span>
-          Payments
+          Bills & Payments
         </button>
 
 
@@ -150,7 +133,7 @@ function Sidebar({
         {/* Management */}
 
         <p className="menu-title management-title">
-          MANAGEMENT
+          COMMUNICATION & COMPLAINTS
         </p>
 
 
@@ -187,6 +170,12 @@ function Sidebar({
           Complaints
         </button>
 
+        {/* User Management */}
+
+        <p className="menu-title management-title">
+          USER MANAGEMENT
+        </p>
+
         {/* Users */}
 
         <button
@@ -202,6 +191,7 @@ function Sidebar({
           <span className="nav-icon">👤</span>
           Users
         </button>
+
 
       </nav>
 
