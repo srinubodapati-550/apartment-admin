@@ -430,6 +430,25 @@ function handleEditChange(event) {
     value
   } = event.target
 
+  if (name === 'status') {
+
+    setEditFormData({
+      ...editFormData,
+      status: value,
+      memberCount:
+        value === 'VACANT'
+          ? 0
+          : Number(editFormData.memberCount) < 1
+            ? 1
+            : editFormData.memberCount,
+      ownerId:
+        value === 'VACANT'
+          ? ''
+          : editFormData.ownerId
+    })
+
+    return
+  }
 
   setEditFormData({
 
@@ -499,6 +518,32 @@ async function addMember() {
 async function updateFlat(event) {
 
   event.preventDefault()
+
+  const memberCount = Number(
+    editFormData.memberCount
+  )
+
+  if (editFormData.status === 'VACANT') {
+
+    if (memberCount !== 0) {
+      alert(
+        'A vacant flat must have 0 members.'
+      )
+      return
+    }
+
+  }
+
+  if (editFormData.status === 'OCCUPIED') {
+
+    if (memberCount < 1) {
+      alert(
+        'An occupied flat must have at least 1 member.'
+      )
+      return
+    }
+
+  }
 
   if (
     !editFormData.blockId ||
@@ -612,7 +657,54 @@ async function updateFlat(event) {
   )
 
 
-  // 4. Change owner if required
+  // 4. If the flat is being made vacant,
+  //    deactivate the current primary owner.
+  if (editFormData.status === 'VACANT') {
+
+    const currentOwner = flatMembers.find(
+      (member) =>
+        member.flat_id === selectedFlat.id &&
+        member.relationship === 'OWNER' &&
+        member.is_primary === true &&
+        member.status === 'ACTIVE'
+    )
+
+    if (currentOwner) {
+
+      const { error: vacantOwnerError } =
+        await supabase
+          .from('flat_members')
+          .update({
+            status: 'INACTIVE',
+            is_primary: false,
+            move_out_date:
+              new Date()
+                .toISOString()
+                .split('T')[0]
+          })
+          .eq(
+            'id',
+            currentOwner.id
+          )
+
+      if (vacantOwnerError) {
+
+        console.error(
+          'Deactivate owner for vacant flat error:',
+          vacantOwnerError
+        )
+
+        alert(
+          `Flat status changed, but owner could not be removed: ${vacantOwnerError.message}`
+        )
+
+        return
+      }
+    }
+
+  }
+
+  // 5. Change owner if required
   if (
     editFormData.ownerId &&
     (!existingOwner ||
@@ -1643,7 +1735,7 @@ async function updateFlat(event) {
 
   <input
     type="number"
-    min="1"
+    min="0"
     value={editFormData.memberCount}
     onChange={(e) =>
       setEditFormData({
