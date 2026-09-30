@@ -98,6 +98,7 @@ function Users() {
 
   // ---------------------------------------------
   // CREATE USER
+  // DEFAULT PASSWORD = 123456
   // ---------------------------------------------
 
   async function handleCreateUser(e) {
@@ -125,7 +126,7 @@ function Users() {
               email: form.email.trim(),
               phone: form.phone.trim(),
               role: form.role,
-              status: form.status
+              status: form.status,
             }
           }
         )
@@ -150,7 +151,7 @@ function Users() {
       }
 
       alert(
-        'User created successfully.'
+        'User created successfully.\n\nDefault password: 123456'
       )
 
       setShowModal(false)
@@ -627,6 +628,38 @@ function Users() {
                 />
 
               </div>
+
+              {/* Default Password */}
+              {!editingUser && (
+                <div
+                  className="form-group"
+                  style={{
+                    background: '#f7f7f7',
+                    padding: '10px 12px',
+                    borderRadius: '6px'
+                  }}
+                >
+                  <label>
+                    Default Password
+                  </label>
+
+                  <input
+                    type="text"
+                    value="123456"
+                    readOnly
+                  />
+
+                  <small
+                    style={{
+                      color: '#777',
+                      marginTop: '4px',
+                      display: 'block'
+                    }}
+                  >
+                    This password will be used for the initial login.
+                  </small>
+                </div>
+              )}
 
               {/* Role + Status */}
               <div className="form-row">
