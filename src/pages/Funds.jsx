@@ -141,6 +141,37 @@ function Funds() {
 
   }
 
+  
+function getTransactionDescription(transaction) {
+  const description = transaction.description?.trim()
+  const category = transaction.category || 'General Transaction'
+  const fundName = transaction.funds?.name || 'Fund'
+
+  // Preserve a useful description already stored in the database.
+  if (
+    description &&
+    ![
+      'Resident maintenance/corpus payment',
+      'Resident payment',
+      'Expense',
+      'Adjustment'
+    ].includes(description)
+  ) {
+    return description
+  }
+
+  switch (category) {
+    case 'RESIDENT_PAYMENT':
+      return `${fundName} — Resident payment`
+
+    case 'Opening Balance':
+      return description || `Opening balance — ${fundName}`
+
+    default:
+      return description || `${fundName} — ${category}`
+  }
+}
+
 
   const maintenanceFund =
     funds.find(
@@ -421,7 +452,11 @@ function Funds() {
 
                       <td>
 
-                        {transaction.description || '-'}
+                         <div className="transaction-description">
+                        <span>
+                        {getTransactionDescription(transaction)}
+                        </span>
+                        </div>
 
                       </td>
 
